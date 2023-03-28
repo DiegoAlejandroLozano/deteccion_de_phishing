@@ -6,7 +6,7 @@ import pandas
 from matplotlib import pyplot as plt
 
 from sklearn.cluster import KMeans, AgglomerativeClustering
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, confusion_matrix, ConfusionMatrixDisplay, f1_score, precision_score, recall_score
 from sklearn.decomposition import PCA
 
 def metodo_elbow_kmeans(n_grupos:int, dataset:pandas.DataFrame) -> None:
@@ -88,7 +88,7 @@ def pca_componentes_optimos(dataset:pandas.DataFrame)->None:
     """Función encargada de graficar la varianza acumulada de todas
     las variables de un dataset
     
-    Parámetros:
+    Parámetros de entrada:
     
     dataset:pandas.DataFrame --> dataset al cual se le calculará la varianza
     acumulada de sus variables"""
@@ -108,3 +108,25 @@ def pca_componentes_optimos(dataset:pandas.DataFrame)->None:
     plt.ylabel('Suma acumulada varianza explicada (%)')
     plt.grid()
     plt.show()
+
+def classifier_performance(y_pred_:pandas.Series, y_true_:pandas.Series, titulo:str, x_size:int=4, y_size:int=4) -> None:
+    """Función encargada de evaluar el desempeño del clasificador a partir de tus predicciones.
+    
+    Parámetros de entrada:
+    
+    y_pred_:pandas.Series --> Etiquetas clasificadas por el modelo
+    y_true_:pandas.Series --> Etiquetas reales
+    titulo:str --> Nombre del modelo utilizado
+    x_size:int=4 --> Tamaño de la imagen en el eje x
+    y_size:int=4 --> Tamaño de la imagen en el eje y"""
+
+    print('Desempeño del clasificador:')
+    print('---------------------------')
+    print('Precisión:\t{:.2f} %'.format(precision_score(y_pred=y_pred_, y_true=y_true_)*100))
+    print('Sensibilidad:\t{:.2f} %'.format(recall_score(y_pred=y_pred_, y_true=y_true_)*100))
+    print('Puntaje F1:\t{:.2f} %'.format(f1_score(y_pred=y_pred_, y_true=y_true_)*100))
+    matriz_confusion = confusion_matrix(y_pred=y_pred_, y_true=y_true_)
+    fig, ax = plt.subplots(figsize=(x_size,y_size), dpi=100)
+    display = ConfusionMatrixDisplay(matriz_confusion)
+    ax.set(title=titulo)
+    display.plot(ax=ax)
